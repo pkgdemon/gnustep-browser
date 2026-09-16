@@ -2,3 +2,4 @@ obj/
 derived_src/
 *.app/
 *.png
+!docs/screenshot.png
