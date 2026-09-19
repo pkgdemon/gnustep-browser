@@ -146,6 +146,47 @@ Installed layout:
 | `/System/Library/Headers/WebKit` -> framework Headers | so `#import <WebKit/WebKit.h>` works |
 | `/System/Library/Libraries/libWebKit.so` -> framework binary | so `-lWebKit` works |
 
+### 1.7 Optional — video and audio (GStreamer)
+
+The steps above build WebKit without media support, so `<video>` and `<audio>` do
+not work. Sites that assume they do can break; for example, imgur.com renders and
+then goes grey. WPE plays media through GStreamer, which decodes most formats with
+FFmpeg via `gstreamer1.0-libav`.
+
+Install GStreamer:
+
+```sh
+sudo apt-get install -y --no-install-recommends \
+  libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev \
+  gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav
+```
+
+Optional, Devuan only: if Mesa comes from `excalibur-backports`, apt stops with
+`libgbm-dev : Depends: libgbm1 (= …)`. Add `libgbm-dev/excalibur-backports` to the
+end of the command above so `libgbm-dev` matches the installed `libgbm1`.
+
+Reconfigure with the extra arguments. CMake keeps every other setting from 1.3:
+
+```sh
+export LANG=C.UTF-8 LC_ALL=C.UTF-8
+
+cmake -S . -B ../webkit-build \
+  -DUSE_GSTREAMER=ON -DENABLE_VIDEO=ON -DENABLE_WEB_AUDIO=ON -DENABLE_MEDIA_SOURCE=ON
+```
+
+Confirm media support is on:
+
+```
+--  ENABLE_VIDEO ........................................... ON
+--  ENABLE_WEB_AUDIO ....................................... ON
+--  ENABLE_MEDIA_SOURCE .................................... ON
+--  USE_GSTREAMER .......................................... ON
+```
+
+Then build and install again as in 1.4 and 1.5. Turning video on means most of
+WebCore rebuilds, so this takes about as long as the first build. The symlinks
+from 1.5 are kept.
+
 ---
 
 ## Part 2 — Build and install the browser
@@ -196,8 +237,8 @@ main thread and the GLib loop is driven from `NSRunLoop`.
 
 ## Known gaps
 
-No `<video>`/`<audio>` (GStreamer is disabled to halve build time; re-enable with
-`-DENABLE_VIDEO=ON -DUSE_GSTREAMER=ON` plus the GStreamer dev packages). No context
+No `<video>`/`<audio>` unless WebKit is built with the optional GStreamer step
+(1.7), which is off by default to halve build time. No context
 menus, script dialogs, file chooser, downloads, `target=_blank` windows, bookmark or
 history persistence, find-in-page, or IME yet. WebGL is compiled in.
 
