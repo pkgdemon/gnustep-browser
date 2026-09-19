@@ -4,7 +4,7 @@
 
 @class BrowserWindowController;
 
-@interface BrowserTab : NSObject <WebFrameLoadDelegate>
+@interface BrowserTab : NSObject <WebFrameLoadDelegate, WebUIDelegate>
 {
     WebView                *_webView;
     NSTabViewItem          *_item;

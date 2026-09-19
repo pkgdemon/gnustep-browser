@@ -141,9 +141,8 @@ static NSMutableArray *sWindows = nil;
 
 /* ---- actions ---- */
 
-- (void)newTab:(id)sender
+- (BrowserTab *)newTabReturningTab
 {
-    (void)sender;
     BrowserTab *tab = [[BrowserTab alloc] initWithController:self];
     [_tabs addObject:tab];
     [_tabView addTabViewItem:[tab tabViewItem]];
@@ -151,6 +150,13 @@ static NSMutableArray *sWindows = nil;
     [tab release];
     [self focusURLField:nil];
     [self tabDidChangeState:nil];
+    return tab;
+}
+
+- (void)newTab:(id)sender
+{
+    (void)sender;
+    [self newTabReturningTab];
 }
 
 - (void)closeTab:(id)sender

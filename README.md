@@ -238,9 +238,11 @@ main thread and the GLib loop is driven from `NSRunLoop`.
 ## Known gaps
 
 No `<video>`/`<audio>` unless WebKit is built with the optional GStreamer step
-(1.7), which is off by default to halve build time. No context
-menus, script dialogs, file chooser, downloads, `target=_blank` windows, bookmark or
-history persistence, find-in-page, or IME yet. WebGL is compiled in.
+(1.7), which is off by default to halve build time. `target=_blank` and
+`window.open` open a new tab, but the page gets its own web process, so
+`window.opener` and named targets do not connect. No context menus, script
+dialogs, file chooser, downloads, bookmark or history persistence,
+find-in-page, or IME yet. WebGL is compiled in.
 
 ## Licence
 

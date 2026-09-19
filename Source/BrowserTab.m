@@ -14,12 +14,22 @@
     _webView = [[WebView alloc] initWithFrame:NSMakeRect(0, 0, 1024, 700)];
     [_webView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
     [_webView setFrameLoadDelegate:self];
+    [_webView setUIDelegate:self];
 
     _item = [[NSTabViewItem alloc] initWithIdentifier:self];
     [_item setLabel:_title];
     [_item setView:_webView];
 
     return self;
+}
+
+/* ---- WebUIDelegate ----
+ * A page asked for a new window (target=_blank, window.open). Give it a new
+ * tab; WebKit.framework loads the request into that tab's view. */
+- (WebView *)webView:(WebView *)sender createWebViewWithRequest:(NSURLRequest *)request
+{
+    (void)sender; (void)request;
+    return [[_controller newTabReturningTab] webView];
 }
 
 - (void)dealloc

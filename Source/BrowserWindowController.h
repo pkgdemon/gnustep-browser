@@ -21,6 +21,7 @@
 - (id)init;
 - (NSWindow *)window;
 - (void)newTab:(id)sender;
+- (BrowserTab *)newTabReturningTab;   /* the tab, for window.open */
 - (void)closeTab:(id)sender;
 - (void)goBack:(id)sender;
 - (void)goForward:(id)sender;
