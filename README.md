@@ -187,6 +187,64 @@ Then build and install again as in 1.4 and 1.5. Turning video on means most of
 WebCore rebuilds, so this takes about as long as the first build. The symlinks
 from 1.5 are kept.
 
+### 1.8 Optional — ALSA output device
+
+Only needed if you have no sound server (no PipeWire or PulseAudio) and hear
+nothing. WebKit plays through GStreamer's default ALSA device, which is card 0,
+device 0. That device does not exist on every machine — an NVIDIA card, for
+example, numbers its HDMI outputs 3, 7, 8 and 9 — and playback then fails with
+`unable to open slave`.
+
+List the playback devices and find the one that is connected:
+
+```sh
+aplay -l
+grep -l 'eld_valid[[:space:]]*1' /proc/asound/card*/eld#* | head   # live HDMI outputs
+aplay -D plughw:0,3 -f cd -d 1 /dev/zero                           # test one, silently
+```
+
+Set that device as the default in `/etc/asound.conf`, going through `dmix` so
+several programs can play at once and `plug` so formats are converted:
+
+```
+pcm.out_dmix {
+    type dmix
+    ipc_key 2048
+    slave {
+        pcm "hw:0,3"
+        format S32_LE
+        rate 48000
+        channels 2
+        period_size 1024
+        buffer_size 8192
+    }
+}
+
+pcm.!default {
+    type plug
+    slave.pcm "out_dmix"
+}
+
+ctl.!default {
+    type hw
+    card 0
+}
+```
+
+Match `pcm "hw:0,3"` and `card 0` to your device. `format` matters: HDMI outputs
+often accept only `S32_LE`, and `dmix` fails if it asks for 16-bit instead.
+
+Test it, and on HDMI turn the digital output on if it is silent:
+
+```sh
+speaker-test -D default -c 2 -t wav -l 1
+amixer -c 0 sset 'IEC958',0 on   # repeat for indexes 1..3 if needed
+sudo alsactl store               # keep the switches after a reboot
+```
+
+Nothing needs restarting, but applications pick the device up only when they
+start, so restart the browser.
+
 ---
 
 ## Part 2 — Build and install the browser
