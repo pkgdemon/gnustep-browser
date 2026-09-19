@@ -113,12 +113,19 @@ sudo ninja -C ../webkit-build install
 sudo ldconfig
 ```
 
-One workaround is currently needed. WebKit's `wpe-webkit.pc.in` hardcodes
+Two workarounds are currently needed. WebKit's `wpe-webkit.pc.in` hardcodes
 `includedir=${prefix}/include` and ignores `CMAKE_INSTALL_INCLUDEDIR`, so add a
 compatibility symlink:
 
 ```sh
 sudo ln -sfn Library/Headers /System/include
+```
+
+The framework installs its umbrella header as `WebKitGNUstep.h`, but the browser
+imports `<WebKit/WebKit.h>`, so add it under that name too:
+
+```sh
+sudo ln -s WebKitGNUstep.h /System/Library/Frameworks/WebKit.framework/Versions/0/Headers/WebKit.h
 ```
 
 ### 1.6 Verify
