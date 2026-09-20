@@ -245,6 +245,72 @@ sudo alsactl store               # keep the switches after a reboot
 Nothing needs restarting, but applications pick the device up only when they
 start, so restart the browser.
 
+### 1.9 Optional — WebRTC (video calls)
+
+Only needed for sites that place calls in the browser, such as meet.jit.si,
+which otherwise reports that WebRTC is not available. WPE builds WebRTC from
+the libwebrtc sources bundled in the WebKit tree (400 MB of them), so this adds
+roughly as much build time again as 1.4.
+
+Each step below is separate; run them in order.
+
+#### 1.9.1 Install the WebRTC dependency
+
+WebKit's libwebrtc needs libevent, ALSA and Opus. The last two are usually
+already installed, and only `libevent-dev` is missing after 1.1:
+
+```sh
+sudo apt-get install -y --no-install-recommends \
+  libevent-dev libasound2-dev libopus-dev
+```
+
+#### 1.9.2 Reconfigure
+
+CMake keeps every other setting from 1.3 and 1.7:
+
+```sh
+cd ~/WebKit
+export LANG=C.UTF-8 LC_ALL=C.UTF-8
+
+cmake -S . -B ../webkit-build \
+  -DENABLE_MEDIA_STREAM=ON -DENABLE_WEB_RTC=ON
+```
+
+Confirm both features are on before building:
+
+```
+--  ENABLE_MEDIA_STREAM .................................... ON
+--  ENABLE_WEB_RTC ......................................... ON
+```
+
+#### 1.9.3 Build
+
+```sh
+ninja -C ../webkit-build -j$(nproc)
+```
+
+#### 1.9.4 Install
+
+```sh
+sudo ninja -C ../webkit-build install
+sudo ldconfig
+```
+
+#### 1.9.5 Test
+
+Open meet.jit.si. It should no longer report that WebRTC is unavailable.
+
+#### 1.9.6 Known limits
+
+- Camera and microphone access needs a permission request to be answered, which
+  `WebKit.framework` does not implement yet, so `getUserMedia()` is refused even
+  once WebRTC is compiled in. `RTCPeerConnection` itself exists, so a page stops
+  reporting WebRTC as missing.
+- Check the machine actually has capture hardware: `ls /dev/video*` for a
+  camera, `arecord -l` for microphones.
+- The installed engine grows: `libWPEWebKit-2.0.so` is about 148 MB without
+  WebRTC.
+
 ---
 
 ## Part 2 — Build and install the browser
@@ -252,8 +318,8 @@ start, so restart the browser.
 Fast — seconds, not hours.
 
 ```sh
-git clone https://github.com/pkgdemon/gershwin-browser.git
-cd gershwin-browser
+git clone https://github.com/pkgdemon/gnustep-browser.git
+cd gnustep-browser
 make
 sudo make install GNUSTEP_INSTALLATION_DOMAIN=LOCAL
 ```
