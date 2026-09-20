@@ -1,4 +1,4 @@
-# Gershwin Browser
+# GNUstep Browser
 
 A native [GNUstep](https://gnustep.github.io/) web browser powered by **real WebKit**.
 
@@ -6,7 +6,7 @@ Not a wrapper around Chromium, and not a partial HTML renderer — this is the a
 WebKit engine (WPE WebKit) rendering into an AppKit `NSView`, with HarfBuzz text
 shaping, Skia rasterisation and libsoup networking.
 
-![Gershwin Browser](docs/screenshot.png)
+![GNUstep Browser](docs/screenshot.png)
 
 ## Features
 
