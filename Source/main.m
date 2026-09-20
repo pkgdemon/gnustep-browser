@@ -96,7 +96,12 @@ int main(int argc, const char **argv)
         else
             url = [NSString stringWithUTF8String:argv[i]];
     }
-    [d setStartURL:url ? url : @"https://example.com"];
+    /* The home page is also what the + button and Cmd-T open. */
+    [[NSUserDefaults standardUserDefaults] registerDefaults:
+        [NSDictionary dictionaryWithObject:@"https://www.duckduckgo.com/"
+                                    forKey:@"Homepage"]];
+    [d setStartURL:url ? url
+                       : [[NSUserDefaults standardUserDefaults] stringForKey:@"Homepage"]];
     if (shot) [d setShotPath:shot];
 
     [app setMainMenu:buildMenu()];

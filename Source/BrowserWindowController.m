@@ -115,7 +115,10 @@ static NSMutableArray *sWindows = nil;
     [_tabView setDelegate:(id)self];
     [cv addSubview:_tabView];
 
-    [self newTab:nil];
+    /* Create the first tab empty: the caller loads the start URL into it.
+     * Going through -newTab: would load the home page first and that load
+     * would then be cancelled, which WebKit reports as an interrupted load. */
+    [self newTabReturningTab];
     return self;
 }
 
@@ -156,7 +159,11 @@ static NSMutableArray *sWindows = nil;
 - (void)newTab:(id)sender
 {
     (void)sender;
-    [self newTabReturningTab];
+    BrowserTab *tab = [self newTabReturningTab];
+    NSString *home = [[NSUserDefaults standardUserDefaults] stringForKey:@"Homepage"];
+
+    if ([home length])
+        [tab loadURLString:home];
 }
 
 - (void)closeTab:(id)sender
