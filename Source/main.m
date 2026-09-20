@@ -14,13 +14,9 @@ static NSMenu *buildMenu(void)
     [menu addItemWithTitle:@"New Window" action:@selector(newWindow:) keyEquivalent:@"n"];
     [menu addItemWithTitle:@"New Tab"    action:@selector(newTab:)    keyEquivalent:@"t"];
     [menu addItemWithTitle:@"Close Tab"  action:@selector(closeTab:)  keyEquivalent:@"w"];
-    [menu addItem:[NSMenuItem separatorItem]];
-    [menu addItemWithTitle:@"Open Location..." action:@selector(focusURLField:) keyEquivalent:@"l"];
     [menu addItemWithTitle:@"Reload"     action:@selector(reloadOrStop:) keyEquivalent:@"r"];
-    [menu addItem:[NSMenuItem separatorItem]];
     [menu addItemWithTitle:@"Back"       action:@selector(goBack:)    keyEquivalent:@"["];
     [menu addItemWithTitle:@"Forward"    action:@selector(goForward:) keyEquivalent:@"]"];
-    [menu addItem:[NSMenuItem separatorItem]];
 
     NSMenu *edit = [[NSMenu alloc] initWithTitle:@"Edit"];
     [edit addItemWithTitle:@"Cut"       action:@selector(cut:)       keyEquivalent:@"x"];
