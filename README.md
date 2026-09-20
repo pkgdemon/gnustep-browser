@@ -141,7 +141,12 @@ sudo ln -sfn WebKitGNUstep.h \
 ls /System/Library/Frameworks/WebKit.framework/Versions/Current/libWebKit.so
 ls /System/Library/Libraries/wpe-webkit-2.0/WPEWebProcess
 ls /System/Library/Headers/WebKit/WebView.h
+ls -l /System/Library/Headers/WebKit/WebKit.h
 ```
+
+The last one is the symlink from 1.5, and it is the one that goes missing:
+`ninja install` never creates it, and reinstalling GNUstep over `/System` takes
+it away. Without it the browser stops at `'WebKit/WebKit.h' file not found`.
 
 Installed layout:
 
@@ -453,6 +458,7 @@ Verify as in 1.6:
 ls /System/Library/Frameworks/WebKit.framework/Versions/Current/libWebKit.so
 ls /System/Library/Libraries/wpe-webkit-2.0/WPEWebProcess
 ls /System/Library/Headers/WebKit/WebView.h
+ls -l /System/Library/Headers/WebKit/WebKit.h
 ```
 
 #### After that
