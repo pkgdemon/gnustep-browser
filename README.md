@@ -190,9 +190,10 @@ Confirm media support is on:
 --  USE_GSTREAMER .......................................... ON
 ```
 
-Then build and install again as in 1.4 and 1.5. Turning video on means most of
-WebCore rebuilds, so this takes about as long as the first build. The symlinks
-from 1.5 are kept.
+Then build and install again as in 1.4 and 1.5, and rebuild the browser from
+Part 2 against the replaced framework. Turning video on means most of WebCore
+rebuilds, so this takes about as long as the first build. The symlinks from 1.5
+are kept.
 
 ### 1.8 Optional — ALSA output device
 
@@ -310,6 +311,8 @@ ninja -C ../webkit-build -j$(nproc)
 sudo ninja -C ../webkit-build install
 sudo ldconfig
 ```
+
+Then rebuild the browser from Part 2 against the replaced framework.
 
 #### 1.9.5 Test
 
@@ -510,8 +513,7 @@ main thread and the GLib loop is driven from `NSRunLoop`.
 
 No `<video>`/`<audio>` unless WebKit is built with the optional GStreamer step
 (1.7, or 1.10 for everything at once), which is off by default to halve build
-time. `target=_blank` and
-`window.open` open a new tab, but the page gets its own web process, so
-`window.opener` and named targets do not connect. No context menus, script
+time. `target=_blank` and `window.open` open a new tab, but the page gets its own
+web process, so `window.opener` and named targets do not connect. No context menus, script
 dialogs, file chooser, downloads, bookmark or history persistence,
 find-in-page, or IME yet. WebGL is compiled in.
