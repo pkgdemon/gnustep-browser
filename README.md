@@ -254,15 +254,19 @@ roughly as much build time again as 1.4.
 
 Each step below is separate; run them in order.
 
-#### 1.9.1 Install the WebRTC dependency
+#### 1.9.1 Install the WebRTC dependencies
 
-WebKit's libwebrtc needs libevent, ALSA and Opus. The last two are usually
-already installed, and only `libevent-dev` is missing after 1.1:
+WebKit's libwebrtc needs libevent, ALSA and Opus, and assembles its codec and
+BoringSSL routines with `nasm`. ALSA and Opus are usually installed already:
 
 ```sh
 sudo apt-get install -y --no-install-recommends \
-  libevent-dev libasound2-dev libopus-dev
+  nasm libevent-dev libasound2-dev libopus-dev
 ```
+
+Without `nasm` the configure step stops with `No CMAKE_ASM_NASM_COMPILER could
+be found`. `libpulse` is looked for as well but is optional: it reports
+"libpulse is not found, not building support" and carries on.
 
 #### 1.9.2 Reconfigure
 
