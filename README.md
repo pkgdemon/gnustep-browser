@@ -326,8 +326,8 @@ Open meet.jit.si. It should no longer report that WebRTC is unavailable.
   reporting WebRTC as missing.
 - Check the machine actually has capture hardware: `ls /dev/video*` for a
   camera, `arecord -l` for microphones.
-- The installed engine grows: `libWPEWebKit-2.0.so` is about 148 MB without
-  WebRTC.
+- The installed engine grows: `libWPEWebKit-2.0.so` goes from about 148 MB to
+  about 170 MB.
 
 ### 1.10 Optional — everything in one go
 
