@@ -256,17 +256,21 @@ Each step below is separate; run them in order.
 
 #### 1.9.1 Install the WebRTC dependencies
 
-WebKit's libwebrtc needs libevent, ALSA and Opus, and assembles its codec and
-BoringSSL routines with `nasm`. ALSA and Opus are usually installed already:
+WebKit's libwebrtc needs libevent, ALSA and Opus, assembles its codec and
+BoringSSL routines with `nasm`, and on Linux takes libvpx from the system.
+ALSA and Opus are usually installed already:
 
 ```sh
 sudo apt-get install -y --no-install-recommends \
-  nasm libevent-dev libasound2-dev libopus-dev
+  nasm libevent-dev libasound2-dev libopus-dev libvpx-dev
 ```
 
 Without `nasm` the configure step stops with `No CMAKE_ASM_NASM_COMPILER could
-be found`. `libpulse` is looked for as well but is optional: it reports
-"libpulse is not found, not building support" and carries on.
+be found`, and without `libvpx-dev` the build stops at
+`'vpx/vpx_codec.h' file not found`: libwebrtc adds its own bundled libvpx
+headers only on Apple platforms. `libpulse` is looked for as well but is
+optional: it reports "libpulse is not found, not building support" and carries
+on.
 
 #### 1.9.2 Reconfigure
 
