@@ -349,8 +349,8 @@ is guaranteed to match a fresh configure. The clone itself is built out-of-tree
 and stays as it is — keep it and skip 1.2, or `git pull` for a newer fork.
 
 Nothing needs removing under `/System`: 1.5 installs over the top of an existing
-engine and the two symlinks are kept. The browser from Part 2 does not need
-rebuilding either — it links against the framework, which does not change name.
+engine and the two symlinks are kept. Rebuild the browser (Part 2) afterwards —
+it takes seconds, and it is built against the framework you just replaced.
 
 #### Install every dependency — base, GStreamer and WebRTC
 
