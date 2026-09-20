@@ -420,8 +420,40 @@ Check the summary before building:
 --  ENABLE_WEB_RTC ......................................... ON
 ```
 
-Continue with 1.4 (build), 1.5 (install and symlinks) and 1.6 (verify), then
-rebuild the browser from Part 2. Skip 1.7 and 1.9 — they are already included,
+#### Build
+
+Same as 1.4. Roughly 8,800 targets, plus libwebrtc. Use fewer jobs if you have
+little RAM and no swap — the link steps are memory hungry.
+
+```sh
+ninja -C ../webkit-build -j$(nproc)
+```
+
+#### Install
+
+Same as 1.5, including the two symlink workarounds — `-sfn` so they are safe to
+re-run on a machine that already has them:
+
+```sh
+sudo ninja -C ../webkit-build install
+sudo ldconfig
+
+sudo ln -sfn Library/Headers /System/include
+sudo ln -sfn WebKitGNUstep.h \
+  /System/Library/Frameworks/WebKit.framework/Versions/0/Headers/WebKit.h
+```
+
+Verify as in 1.6:
+
+```sh
+ls /System/Library/Frameworks/WebKit.framework/Versions/Current/libWebKit.so
+ls /System/Library/Libraries/wpe-webkit-2.0/WPEWebProcess
+ls /System/Library/Headers/WebKit/WebView.h
+```
+
+#### After that
+
+Rebuild the browser from Part 2. Skip 1.7 and 1.9 — they are already included,
 though the WebRTC test in 1.9.5 and the limits in 1.9.6 still apply. 1.8 is still
 worth a look if the machine has no sound server.
 
