@@ -33,6 +33,12 @@ shaping, Skia rasterisation and libsoup networking.
 The browser needs `WebKit.framework`, which is built from a WebKit fork carrying a
 GNUstep API layer. **This part takes 1.5–3 hours** and needs roughly 20 GB of disk.
 
+Sections 1.1–1.6 build a minimal engine; 1.7 (video and audio) and 1.9 (WebRTC)
+add to it afterwards, each re-compiling most of WebCore. If you already know a
+machine wants the lot, **[1.10](#110-optional--everything-in-one-go)** folds all
+three into a single package list and a single configure, so WebKit is compiled
+once.
+
 ### 1.1 Install build dependencies
 
 ```sh
@@ -319,6 +325,82 @@ Open meet.jit.si. It should no longer report that WebRTC is unavailable.
 - The installed engine grows: `libWPEWebKit-2.0.so` is about 148 MB without
   WebRTC.
 
+### 1.10 Optional — everything in one go
+
+Use this **instead of** 1.1, 1.3, 1.7 and 1.9 when the machine is meant to have
+media and WebRTC from the start. Same result, but WebCore is compiled once rather
+than three times. Expect roughly twice the 1.4 build time and more than 20 GB of
+disk, since the bundled libwebrtc sources (400 MB) are built too.
+
+Install every dependency — base, GStreamer and WebRTC:
+
+```sh
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends \
+  ninja-build ruby gperf unifdef cmake clang \
+  libglib2.0-dev libharfbuzz-dev libicu-dev libjpeg-dev libpng-dev libwebp-dev \
+  libepoxy-dev libgcrypt20-dev libsoup-3.0-dev libtasn1-6-dev libxkbcommon-dev \
+  libxml2-dev libxslt1-dev libsqlite3-dev zlib1g-dev \
+  libfreetype-dev libfontconfig-dev \
+  libegl1-mesa-dev libgles2-mesa-dev libgl1-mesa-dev libdrm-dev \
+  libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev \
+  gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav \
+  nasm libevent-dev libasound2-dev libopus-dev libvpx-dev
+```
+
+Devuan only: if Mesa comes from `excalibur-backports`, apt stops with
+`libgbm-dev : Depends: libgbm1 (= …)`. Append `libgbm-dev/excalibur-backports` to
+the command above so `libgbm-dev` matches the installed `libgbm1`.
+
+Then clone the fork as in 1.2 and configure with the media and WebRTC flags on:
+
+```sh
+export LANG=C.UTF-8 LC_ALL=C.UTF-8
+
+cmake -S . -B ../webkit-build -GNinja \
+  -DPORT=WPE -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+  -DENABLE_WPE_PLATFORM=ON -DENABLE_WPE_PLATFORM_HEADLESS=ON \
+  -DENABLE_WPE_GNUSTEP_API=ON \
+  -DENABLE_WPE_LEGACY_API=OFF -DENABLE_WPE_PLATFORM_DRM=OFF \
+  -DENABLE_WPE_PLATFORM_WAYLAND=OFF -DUSE_GBM=OFF -DUSE_LIBDRM=ON \
+  -DENABLE_WEBDRIVER=OFF \
+  -DUSE_GSTREAMER=ON -DENABLE_VIDEO=ON -DENABLE_WEB_AUDIO=ON \
+  -DENABLE_MEDIA_SOURCE=ON -DENABLE_MEDIA_STREAM=ON -DENABLE_WEB_RTC=ON \
+  -DENABLE_MEDIA_RECORDER=OFF -DENABLE_WEB_CODECS=OFF \
+  -DENABLE_SPEECH_SYNTHESIS=OFF \
+  -DUSE_AVIF=OFF -DUSE_JPEGXL=OFF -DUSE_WOFF2=OFF \
+  -DENABLE_SPELLCHECK=OFF -DUSE_LIBHYPHEN=OFF \
+  -DENABLE_INTROSPECTION=OFF -DENABLE_DOCUMENTATION=OFF \
+  -DENABLE_JOURNALD_LOG=OFF -DUSE_LIBBACKTRACE=OFF \
+  -DENABLE_BUBBLEWRAP_SANDBOX=OFF -DUSE_ATK=OFF -DUSE_FLITE=OFF \
+  -DENABLE_GAMEPAD=OFF -DENABLE_WEBXR=OFF -DENABLE_MINIBROWSER=OFF \
+  -DCMAKE_INSTALL_PREFIX=/System \
+  -DCMAKE_INSTALL_LIBDIR=Library/Libraries \
+  -DCMAKE_INSTALL_INCLUDEDIR=Library/Headers \
+  -DCMAKE_INSTALL_DATADIR=Library/Application\ Support \
+  -DLIB_INSTALL_DIR=/System/Library/Libraries \
+  -DEXEC_INSTALL_DIR=/System/Library/Tools \
+  -DLIBEXEC_INSTALL_DIR=/System/Library/Libraries/wpe-webkit-2.0
+```
+
+Check the summary before building:
+
+```
+-- Found GNUstep: /System/Library/Tools/gnustep-config
+--  ENABLE_WPE_GNUSTEP_API ................................. ON
+--  ENABLE_VIDEO ........................................... ON
+--  ENABLE_WEB_AUDIO ....................................... ON
+--  ENABLE_MEDIA_SOURCE .................................... ON
+--  USE_GSTREAMER .......................................... ON
+--  ENABLE_MEDIA_STREAM .................................... ON
+--  ENABLE_WEB_RTC ......................................... ON
+```
+
+Continue with 1.4 (build), 1.5 (install and symlinks) and 1.6 (verify), then skip
+1.7 and 1.9 — they are already included. 1.8 still applies if the machine has no
+sound server, and the WebRTC limits in 1.9.6 still hold.
+
 ---
 
 ## Part 2 — Build and install the browser
@@ -370,7 +452,8 @@ main thread and the GLib loop is driven from `NSRunLoop`.
 ## Known gaps
 
 No `<video>`/`<audio>` unless WebKit is built with the optional GStreamer step
-(1.7), which is off by default to halve build time. `target=_blank` and
+(1.7, or 1.10 for everything at once), which is off by default to halve build
+time. `target=_blank` and
 `window.open` open a new tab, but the page gets its own web process, so
 `window.opener` and named targets do not connect. No context menus, script
 dialogs, file chooser, downloads, bookmark or history persistence,
