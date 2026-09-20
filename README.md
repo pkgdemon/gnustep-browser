@@ -131,7 +131,8 @@ The framework installs its umbrella header as `WebKitGNUstep.h`, but the browser
 imports `<WebKit/WebKit.h>`, so add it under that name too:
 
 ```sh
-sudo ln -s WebKitGNUstep.h /System/Library/Frameworks/WebKit.framework/Versions/0/Headers/WebKit.h
+sudo ln -sfn WebKitGNUstep.h \
+  /System/Library/Frameworks/WebKit.framework/Versions/0/Headers/WebKit.h
 ```
 
 ### 1.6 Verify
