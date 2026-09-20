@@ -374,7 +374,8 @@ the command above so `libgbm-dev` matches the installed `libgbm1`.
 
 #### Configure with the media and WebRTC flags on
 
-Clone the fork first if you have not already (1.2), then:
+Run this from inside the WebKit clone — clone it as in 1.2 if you do not have
+one already:
 
 ```sh
 export LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -419,9 +420,10 @@ Check the summary before building:
 --  ENABLE_WEB_RTC ......................................... ON
 ```
 
-Continue with 1.4 (build), 1.5 (install and symlinks) and 1.6 (verify), then skip
-1.7 and 1.9 — they are already included. 1.8 still applies if the machine has no
-sound server, and the WebRTC limits in 1.9.6 still hold.
+Continue with 1.4 (build), 1.5 (install and symlinks) and 1.6 (verify), then
+rebuild the browser from Part 2. Skip 1.7 and 1.9 — they are already included,
+though the WebRTC test in 1.9.5 and the limits in 1.9.6 still apply. 1.8 is still
+worth a look if the machine has no sound server.
 
 ---
 
