@@ -375,8 +375,3 @@ No `<video>`/`<audio>` unless WebKit is built with the optional GStreamer step
 `window.opener` and named targets do not connect. No context menus, script
 dialogs, file chooser, downloads, bookmark or history persistence,
 find-in-page, or IME yet. WebGL is compiled in.
-
-## Licence
-
-The browser is provided under the same terms as its dependencies; see the WebKit and
-GNUstep projects for theirs.
