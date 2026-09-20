@@ -332,7 +332,27 @@ media and WebRTC from the start. Same result, but WebCore is compiled once rathe
 than three times. Expect roughly twice the 1.4 build time and more than 20 GB of
 disk, since the bundled libwebrtc sources (400 MB) are built too.
 
-Install every dependency — base, GStreamer and WebRTC:
+#### Clean out a previous build
+
+Skip this if you have not built before. Otherwise delete the build directory —
+CMake caches every setting there, so anything an earlier configure left behind
+(install paths, feature flags you are not passing this time) would survive into
+this build:
+
+```sh
+cd ~/WebKit
+rm -rf ../webkit-build
+```
+
+That reclaims the ~20 GB of objects and means a full rebuild; nothing short of it
+is guaranteed to match a fresh configure. The clone itself is built out-of-tree
+and stays as it is — keep it and skip 1.2, or `git pull` for a newer fork.
+
+Nothing needs removing under `/System`: 1.5 installs over the top of an existing
+engine and the two symlinks are kept. The browser from Part 2 does not need
+rebuilding either — it links against the framework, which does not change name.
+
+#### Install every dependency — base, GStreamer and WebRTC
 
 ```sh
 sudo apt-get update
@@ -352,7 +372,9 @@ Devuan only: if Mesa comes from `excalibur-backports`, apt stops with
 `libgbm-dev : Depends: libgbm1 (= …)`. Append `libgbm-dev/excalibur-backports` to
 the command above so `libgbm-dev` matches the installed `libgbm1`.
 
-Then clone the fork as in 1.2 and configure with the media and WebRTC flags on:
+#### Configure with the media and WebRTC flags on
+
+Clone the fork first if you have not already (1.2), then:
 
 ```sh
 export LANG=C.UTF-8 LC_ALL=C.UTF-8
